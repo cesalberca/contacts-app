@@ -31,6 +31,9 @@ import es.cesalberca.contactsapp.data.local.ContactsRepository;
 import es.cesalberca.contactsapp.utils.ImageUtils;
 import es.cesalberca.contactsapp.utils.LocationUtils;
 
+/**
+ * Details of the contact for the activity_detail_contact layout
+ */
 public class DetailContactActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
@@ -49,6 +52,7 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
             getActionBar().setHomeButtonEnabled(true);
         }
 
+        // We get the id of the contact to show the details for
         Bundle extras = getIntent().getExtras();
         contactId = extras.getString(MainActivity.CONTACT_ID);
 
@@ -62,6 +66,7 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         contactImage = (ImageView) findViewById(R.id.ivContact);
         contactDistance = (TextView) findViewById(R.id.tvDistance);
 
+        // Loads the contact data
         this.loadContactData(contactId);
         buildGoogleApiClient();
     }
@@ -86,16 +91,21 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
                 locateContact();
                 return true;
             case android.R.id.home:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                this.finish();
+                navigateHome();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void navigateHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
     private void locateContact() {
+        // Makes a query by the address of the contact
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + contact.getAddress()));
         startActivity(intent);
     }
@@ -107,6 +117,10 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         startActivity(intent);
     }
 
+    /**
+     * Loads all the pertinent data for the detail activity
+     * @param contactId
+     */
     public void loadContactData(String contactId) {
         contact = ContactsRepository.getInstance(getApplicationContext()).findOne(contactId);
         contactName.setText(contact.getName());
@@ -120,13 +134,20 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
             Bitmap bitmap = ImageUtils.decodeBitmapUri(this, Uri.parse(contact.getAvatar()));
             contactImage.setImageBitmap(bitmap);
         } catch (IOException e) {
+            // If no image is found fallback to the default image
             contactImage.setImageDrawable(getResources().getDrawable(R.drawable.default_contact_image));
         }
     }
 
+    /**
+     * Calls a contact
+     * @param view View as required
+     */
     public void callContact(View view) {
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:" + contact.getPhone()));
+
+        // Checks if we have permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "We don't have permissions to call!", Toast.LENGTH_SHORT).show();
             return;
@@ -134,6 +155,9 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         startActivity(intent);
     }
 
+    /**
+     * Launches an intent to share contact data
+     */
     public void shareContact() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
@@ -142,35 +166,48 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         startActivity(sendIntent);
     }
 
+    /**
+     * Returns the previous contact from the one selected
+     * @param view The view as required
+     */
     public void previousContact(View view) {
         List<Contact> contactList = ContactsRepository.getInstance(getApplicationContext()).findAll();
+        // Gets the previous index
         int previousIndex = contactList.indexOf(contact) - 1;
 
         String nextContactId;
 
+        // Important to check for out of bounds
         if (previousIndex >= 0) {
             nextContactId = contactList.get(previousIndex).getId();
         } else {
             nextContactId = contactList.get(contactList.size() - 1).getId();
         }
 
+        // Starts new activity so we can navigate via back press
         Intent intent = new Intent(this, DetailContactActivity.class);
         intent.putExtra(MainActivity.CONTACT_ID, nextContactId);
         startActivity(intent);
     }
 
+    /**
+     * Returns the next contact from the one selected
+     * @param view
+     */
     public void nextContact(View view) {
         List<Contact> contactList = ContactsRepository.getInstance(getApplicationContext()).findAll();
         int nextIndex = contactList.indexOf(contact) + 1;
 
         String nextContactId;
 
+        // Important to check for out of bounds
         if (nextIndex < contactList.size()) {
             nextContactId = contactList.get(nextIndex).getId();
         } else {
             nextContactId = contactList.get(0).getId();
         }
 
+        // Starts new activity so we can navigate via back press
         Intent intent = new Intent(this, DetailContactActivity.class);
         intent.putExtra(MainActivity.CONTACT_ID, nextContactId);
         startActivity(intent);
@@ -200,11 +237,15 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        // Checks for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "We need gps permissions!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Gets the last known location
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        // Gets the location of that contact
         Location contactLocation = LocationUtils.getLocationFromAddress(this, contact.getAddress());
 
         if (lastLocation != null) {

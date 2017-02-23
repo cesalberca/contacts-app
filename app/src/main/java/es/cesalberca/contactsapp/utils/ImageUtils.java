@@ -7,7 +7,17 @@ import android.net.Uri;
 
 import java.io.FileNotFoundException;
 
+/**
+ * Utils for image
+ */
 public class ImageUtils {
+    /**
+     * Method to reduce the memory allocation of an image
+     * @param ctx Context of the application
+     * @param uri Uri to decode bitmap of
+     * @return Decoded bitmap
+     * @throws FileNotFoundException The bitmap wasnt found
+     */
     public static Bitmap decodeBitmapUri(Context ctx, Uri uri) throws FileNotFoundException {
         int targetW = 600;
         int targetH = 600;

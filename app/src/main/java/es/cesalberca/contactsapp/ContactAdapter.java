@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import es.cesalberca.contactsapp.data.Contact;
 import es.cesalberca.contactsapp.utils.ImageUtils;
 
+/**
+ * Adapter for the contact's listview
+ */
 public class ContactAdapter extends ArrayAdapter<Contact> {
     public ContactAdapter(Context context, ArrayList<Contact> contacts) {
         super(context, 0, contacts);
@@ -34,12 +37,15 @@ public class ContactAdapter extends ArrayAdapter<Contact> {
         ImageView contactImage = (ImageView) convertView.findViewById(R.id.ivContact);
 
         if (contact != null) {
+            // Concatenates the name and the lastname
             contactFullname.setText(contact.getName() + " " + contact.getLastname());
             contactPhone.setText(contact.getPhone());
             try {
+                // Parses the uri and gets the bitmap
                 Bitmap bitmap = ImageUtils.decodeBitmapUri(getContext(), Uri.parse(contact.getAvatar()));
                 contactImage.setImageBitmap(bitmap);
             } catch (IOException e) {
+                // If no image is found use default
                 contactImage.setBackgroundResource(R.drawable.ic_person_black_24dp);
             }
         }

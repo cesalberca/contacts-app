@@ -18,6 +18,9 @@ import java.util.List;
 import es.cesalberca.contactsapp.data.Contact;
 import es.cesalberca.contactsapp.data.local.ContactsRepository;
 
+/**
+ * Main entry point of the app. By default shows all contacts
+ */
 public class MainActivity extends AppCompatActivity {
     public static final String CONTACT_ID = "CONTACT_ID";
 
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         lvContacts = (ListView) findViewById(R.id.lvContacts);
 
+        // Returns all the contacts
         contactsList = ContactsRepository.getInstance(getApplicationContext()).findAll();
 
         final ContactAdapter adapter = new ContactAdapter(this, (ArrayList<Contact>) contactsList);
