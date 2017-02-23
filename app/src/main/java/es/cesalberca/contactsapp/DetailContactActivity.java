@@ -1,6 +1,8 @@
 package es.cesalberca.contactsapp;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -111,10 +114,24 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
     }
 
     private void deleteContact() {
-        ContactsRepository.getInstance(getApplicationContext()).delete(contactId);
-        Toast.makeText(this, "Contact deleted!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        new AlertDialog.Builder(DetailContactActivity.this)
+        .setTitle("Delete user?")
+        .setMessage("Are you sure you want to delete this user?")
+        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                ContactsRepository.getInstance(getApplicationContext()).delete(contactId);
+                Toast.makeText(DetailContactActivity.this, "Contact deleted!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(DetailContactActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        })
+        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+            }
+        })
+        .setIcon(android.R.drawable.ic_dialog_alert)
+        .show();
     }
 
     /**

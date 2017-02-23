@@ -114,14 +114,6 @@
         android:layout_below="@+id/tvPostalCode"
         android:layout_alignStart="@+id/tvPostalCode"/>
 
-    <TextView
-        android:text="@string/longitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvLongitude"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@+id/tvEmail"
-        android:layout_alignStart="@+id/tvEmail" />
 
     <TextView
         android:text="@string/postal_code"
@@ -133,19 +125,10 @@
         android:layout_alignStart="@+id/etAddress" />
 
     <TextView
-        android:text="@string/latitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvLatitude"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@+id/tvLongitude"
-        android:layout_alignStart="@+id/tvLongitude" />
-
-    <TextView
         android:text="@string/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvDistance"
-        android:layout_below="@+id/tvLatitude"
-        android:layout_alignStart="@+id/tvLatitude" />
+        android:layout_below="@+id/tvEmail"
+        android:layout_alignStart="@+id/tvEmail" />
 </RelativeLayout>
