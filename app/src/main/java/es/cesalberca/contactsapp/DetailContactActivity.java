@@ -135,7 +135,7 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
             contactImage.setImageBitmap(bitmap);
         } catch (IOException e) {
             // If no image is found fallback to the default image
-            contactImage.setImageDrawable(getResources().getDrawable(R.drawable.default_contact_image));
+            contactImage.setBackgroundResource(R.drawable.ic_person_black_24dp);
         }
     }
 
