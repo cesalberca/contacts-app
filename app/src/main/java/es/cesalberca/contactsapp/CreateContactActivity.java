@@ -61,6 +61,11 @@ public class CreateContactActivity extends AppCompatActivity {
      * @param view View of the activity as required
      */
     public void createContact(View view) {
+        if (name.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please, introduce a name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String finalPathImage = "";
 
         // Check if there is a photo, if not, sets it to empty
