@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Delete contact"
+        android:id="@+id/deleteContact"
+        android:icon="@drawable/ic_delete_black_24dp"
+        android:showAsAction="ifRoom" />
+    <item android:title="Share"
+        android:id="@+id/shareContact"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:showAsAction="ifRoom" />
+    <item android:title="Locate"
+        android:id="@+id/locateContact" />
+</menu>
