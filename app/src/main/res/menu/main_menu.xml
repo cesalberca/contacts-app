@@ -3,5 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_create_contact"
         android:title="@string/add_contact"
+        android:icon="@drawable/ic_person_add_black_24dp"
         app:showAsAction="ifRoom"/>
 </menu>
