@@ -64,7 +64,7 @@ public class CreateContactActivity extends AppCompatActivity {
         String finalPathImage = "";
 
         // Check if there is a photo, if not, sets it to empty
-        if (pathImage.toString() != null) {
+        if (pathImage != null) {
                 finalPathImage = pathImage.toString();
         }
 
