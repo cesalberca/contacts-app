@@ -114,7 +114,6 @@
         android:layout_below="@+id/tvPostalCode"
         android:layout_alignStart="@+id/tvPostalCode"/>
 
-
     <TextView
         android:text="@string/postal_code"
         android:layout_width="wrap_content"
