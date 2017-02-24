@@ -12,12 +12,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ import es.cesalberca.contactsapp.utils.LocationUtils;
  * Details of the contact for the activity_detail_contact layout
  */
 public class DetailContactActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    private static final int REQUEST_CODE_CALL = 1, REQUEST_CODE_GPS = 2;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
 
@@ -45,6 +48,7 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
     private Contact contact;
     private TextView contactName, contactLastname, contactPhone, contactAddress, contactPostalCode, contactEmail, contactDistance;
     private ImageView contactImage;
+    private ImageButton buttonCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,13 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         contactEmail = (TextView) findViewById(R.id.tvEmail);
         contactImage = (ImageView) findViewById(R.id.ivContact);
         contactDistance = (TextView) findViewById(R.id.tvDistance);
+        buttonCall = (ImageButton) findViewById(R.id.bCallContact);
+
+        // Asks for permissions for location
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            contactDistance.setText("Distance not available. Check permissions.");
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_GPS);
+        }
 
         // Loads the contact data
         this.loadContactData(contactId);
@@ -130,7 +141,6 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
                 // Do nothing
             }
         })
-        .setIcon(android.R.drawable.ic_dialog_alert)
         .show();
     }
 
@@ -164,11 +174,12 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:" + contact.getPhone()));
 
-        // Checks if we have permissions
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "We don't have permissions to call!", Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            buttonCall.setEnabled(false);
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CALL_PHONE }, REQUEST_CODE_CALL);
             return;
         }
+
         startActivity(intent);
     }
 
@@ -256,7 +267,6 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
     public void onConnected(@Nullable Bundle bundle) {
         // Checks for permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "We need gps permissions!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -279,4 +289,17 @@ public class DetailContactActivity extends AppCompatActivity implements GoogleAp
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_CODE_GPS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                contactDistance.setText("Calculating distance...");
+            }
+        } else if (requestCode == REQUEST_CODE_CALL) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                buttonCall.setEnabled(true);
+            }
+        }
+    }
 }
